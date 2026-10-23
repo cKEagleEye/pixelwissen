@@ -425,9 +425,7 @@
           body: JSON.stringify({ subject, mode })
         });
         if (!res.ok) return null;
-        const data = await res.json();
-        let raw = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
-        const parsed = JSON.parse(raw);
+        const parsed = await res.json();
         return (Array.isArray(parsed) && parsed.length >= 10) ? parsed : null;
       } catch (err) { return null; }
     }
@@ -536,7 +534,7 @@
           appData = defaultData;
         }
       } else {
-        defaultData;
+        appData = defaultData;
       }
       appData.pin = "511201";
       renderApp();
