@@ -38,7 +38,7 @@
               <h3 class="font-bold text-lg text-white">Mathematik</h3>
               <div class="p-2.5 bg-cyan-500/10 rounded-xl text-cyan-400">📐</div>
             </div>
-            <p class="text-xs text-slate-400">Dynamischer Generator</p>
+            <p class="text-xs text-slate-400">Grundrechenarten & mehr</p>
           </div>
           <div onclick="openSubject('deutsch')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-rose-500 cursor-pointer flex flex-col justify-between">
             <div class="flex items-center justify-between mb-3">
@@ -54,6 +54,13 @@
             </div>
             <p class="text-xs text-slate-400">⚡ Serverless KI</p>
           </div>
+          <div onclick="openSubject('turkisch')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-red-500 cursor-pointer flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-lg text-white">Türkisch</h3>
+              <div class="p-2.5 bg-red-500/10 rounded-xl text-red-400 font-black text-sm">TR</div>
+            </div>
+            <p class="text-xs text-slate-400">⚡ Serverless KI</p>
+          </div>
           <div onclick="openSubject('sachkunde')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-emerald-500 cursor-pointer flex flex-col justify-between">
             <div class="flex items-center justify-between mb-3">
               <h3 class="font-bold text-lg text-white">Sachkunde</h3>
@@ -61,7 +68,7 @@
             </div>
             <p class="text-xs text-slate-400">⚡ Serverless KI</p>
           </div>
-          <div onclick="openSubject('tippen')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-purple-500 cursor-pointer flex flex-col justify-between col-span-2 sm:col-span-1">
+          <div onclick="openSubject('tippen')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-purple-500 cursor-pointer flex flex-col justify-between">
             <div class="flex items-center justify-between mb-3">
               <h3 class="font-bold text-lg text-white">10-Finger-Tippen</h3>
               <div class="p-2.5 bg-purple-500/10 rounded-xl text-purple-400">⌨️</div>
@@ -97,15 +104,18 @@
         <button onclick="showView('dashboard')" class="text-xs bg-slate-700 text-white px-3 py-1.5 rounded-lg font-bold">← Zurück</button>
         <h2 class="text-lg font-bold text-cyan-400">📐 Mathe-Arena</h2>
         <select id="mathe-mode-select" onchange="startMatheSession(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white p-2 rounded-xl">
-          <option value="kopfrechnen">Kopfrechnen (Sprint)</option>
+          <option value="addition">Addition (+)</option>
+          <option value="subtraktion">Subtraktion (-)</option>
+          <option value="multiplikation">Multiplikation (•)</option>
+          <option value="division">Division (:)</option>
+          <option value="sachaufgaben">Sachaufgaben</option>
           <option value="groese_zahlen">Zahlenraum bis 1 Mio.</option>
-          <option value="gym_challenge">Gymnasium-Challenge</option>
         </select>
       </div>
       <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 text-center space-y-6">
         <div class="flex justify-between items-center text-xs text-slate-400 border-b border-slate-700 pb-3">
           <div id="math-progress" class="text-cyan-400 font-bold">Aufgabe 1 / 10</div>
-          <div class="text-yellow-400 font-bold">🪙 10 Münzen</div>
+          <div class="text-yellow-400 font-bold">🪙 1 Münze pro richtig</div>
         </div>
         <div class="space-y-4">
           <p id="math-question-text" class="text-xl sm:text-2xl font-black text-white min-h-[60px] flex items-center justify-center"></p>
@@ -122,7 +132,7 @@
       <div class="flex justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700">
         <button onclick="showView('dashboard')" class="text-xs bg-slate-700 text-white px-3 py-1.5 rounded-lg font-bold">← Zurück</button>
         <h2 id="quiz-title" class="text-lg font-bold text-white">Quiz</h2>
-        <select id="quiz-mode-select" onchange="changeQuizMode(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white p-2 rounded-xl max-w-[140px] truncate"></select>
+        <select id="quiz-mode-select" onchange="changeQuizMode(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white p-2 rounded-xl max-w-[160px] truncate"></select>
       </div>
 
       <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 text-center space-y-6">
@@ -260,39 +270,50 @@
       }
     }
 
-    let mathState = { currentQuestion: 0, totalQuestions: 10, correctCount: 0, mode: 'kopfrechnen', currentAnswer: null };
+    let mathState = { currentQuestion: 0, totalQuestions: 10, correctCount: 0, mode: 'addition', currentAnswer: null };
 
     function startMatheSession(mode) {
       if(!checkDailyLimit('mathe', mode)) { showView('dashboard'); return; }
-      mathState.mode = mode || 'kopfrechnen';
+      mathState.mode = mode || 'addition';
       mathState.currentQuestion = 0; mathState.correctCount = 0;
       nextMathQuestion();
     }
 
     function generateMathQuestion() {
       let qText = ""; let ans = 0;
-      if (mathState.mode === 'kopfrechnen') {
-        const ops = ['+', '-', '*', '/'];
-        const op = ops[Math.floor(Math.random() * ops.length)];
-        if (op === '+') {
-          let a = Math.floor(Math.random() * 400) + 15; let b = Math.floor(Math.random() * 400) + 15;
-          qText = `${a} + ${b} = ?`; ans = a + b;
-        } else if (op === '-') {
-          let a = Math.floor(Math.random() * 800) + 50; let b = Math.floor(Math.random() * a);
-          qText = `${a} - ${b} = ?`; ans = a - b;
-        } else if (op === '*') {
-          let a = Math.floor(Math.random() * 15) + 3; let b = Math.floor(Math.random() * 12) + 2;
-          qText = `${a} • ${b} = ?`; ans = a * b;
-        } else if (op === '/') {
-          let b = Math.floor(Math.random() * 9) + 2; let res = Math.floor(Math.random() * 15) + 2;
-          qText = `${b * res} : ${b} = ?`; ans = res;
-        }
+      if (mathState.mode === 'addition') {
+        let a = Math.floor(Math.random() * 450) + 15; 
+        let b = Math.floor(Math.random() * 450) + 15;
+        qText = `${a} + ${b} = ?`; ans = a + b;
+      } else if (mathState.mode === 'subtraktion') {
+        let a = Math.floor(Math.random() * 800) + 50; 
+        let b = Math.floor(Math.random() * a);
+        qText = `${a} - ${b} = ?`; ans = a - b;
+      } else if (mathState.mode === 'multiplikation') {
+        let a = Math.floor(Math.random() * 12) + 2; 
+        let b = Math.floor(Math.random() * 10) + 2;
+        qText = `${a} • ${b} = ?`; ans = a * b;
+      } else if (mathState.mode === 'division') {
+        let b = Math.floor(Math.random() * 10) + 2; 
+        let res = Math.floor(Math.random() * 12) + 2;
+        qText = `${b * res} : ${b} = ?`; ans = res;
+      } else if (mathState.mode === 'sachaufgaben') {
+        const problems = [
+          { q: "Anna hat 48 Sticker und schenkt ihrer Freundin die Hälfte. Wie viele hat sie noch?", a: 24 },
+          { q: "Ein Buch kostet 12 Euro. Tim kauft 3 Stück. Wie viel muss er insgesamt bezahlen?", a: 36 },
+          { q: "Auf einem Parkplatz stehen 56 Autos. 18 fahren weg. Wie viele Autos bleiben da?", a: 38 },
+          { q: "Elias hat 4 Packungen Buntstifte mit je 6 Stiften. Wie viele Stifte hat er insgesamt?", a: 24 },
+          { q: "Ein Zug hat 320 Fahrgäste. An einem Bahnhof steigen 85 aus. Wie viele sind noch im Zug?", a: 235 },
+          { q: "Sarah läuft jeden Tag 4 Kilometer. Wie viele Kilometer läuft sie in einer Woche (7 Tage)?", a: 28 },
+          { q: "In einem Kino gibt es 15 Reihen mit je 12 Plätzen. Wie viele Sitzplätze hat das Kino?", a: 180 },
+          { q: "Max hat 75 Murmeln. Er verliert 28 beim Spielen und bekommt danach 15 geschenkt. Wie viele hat er jetzt?", a: 62 }
+        ];
+        const p = problems[Math.floor(Math.random() * problems.length)];
+        qText = p.q; ans = p.a;
       } else if (mathState.mode === 'groese_zahlen') {
-        let a = Math.floor(Math.random() * 800000) + 50000; let b = Math.floor(Math.random() * 150000) + 10000;
+        let a = Math.floor(Math.random() * 800000) + 50000; 
+        let b = Math.floor(Math.random() * 150000) + 10000;
         qText = `${a.toLocaleString('de-DE')} + ${b.toLocaleString('de-DE')} = ?`; ans = a + b;
-      } else {
-        let l = Math.floor(Math.random() * 12) + 4; let b = Math.floor(Math.random() * 8) + 2;
-        qText = `Ein Rechteck ist ${l}cm lang und ${b}cm breit. Umfang in cm?`; ans = 2 * (l + b);
       }
       mathState.currentAnswer = ans;
       document.getElementById('math-question-text').innerText = qText;
@@ -380,7 +401,8 @@
     let quizState = { subject: '', mode: '', questions: [], currentIdx: 0, correctCount: 0 };
     const quizModes = {
       deutsch: { title: "📚 Deutsch-Meister", modes: { rechtschreibung: "Rechtschreibung", grammatik: "Grammatik" }},
-      englisch: { title: "🇬🇧 English Hero", modes: { vokabeln: "Wortschatz", phrases: "Phrases" }},
+      englisch: { title: "🇬🇧 English Hero", modes: { vokabeln: "Wortschatz", phrases: "Sätze mit Lücken" }},
+      turkisch: { title: "🇹🇷 Türkçe / Türkisch", modes: { vokabeln: "Wortschatz", grammatik: "Alltagssätze" }},
       sachkunde: { title: "🌍 Sachkunde-Forscher", modes: { geografie: "Geografie", natur: "Natur" }}
     };
 
@@ -425,15 +447,9 @@
           body: JSON.stringify({ subject, mode })
         });
         const data = await res.json();
-        if (!res.ok) {
-          alert("DETAIL-FEHLER: " + (data.error || JSON.stringify(data)));
-          return null;
-        }
+        if (!res.ok) return null;
         return (Array.isArray(data) && data.length >= 10) ? data : null;
-      } catch (err) { 
-        alert("NETZWERK-FEHLER: " + err.message);
-        return null; 
-      }
+      } catch (err) { return null; }
     }
 
     function nextQuizQuestion() {
