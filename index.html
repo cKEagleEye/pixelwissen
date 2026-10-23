@@ -424,10 +424,16 @@
           headers: { 'Content-Type': 'application/json' }, 
           body: JSON.stringify({ subject, mode })
         });
-        if (!res.ok) return null;
-        const parsed = await res.json();
-        return (Array.isArray(parsed) && parsed.length >= 10) ? parsed : null;
-      } catch (err) { return null; }
+        const data = await res.json();
+        if (!res.ok) {
+          alert("DETAIL-FEHLER: " + (data.error || JSON.stringify(data)));
+          return null;
+        }
+        return (Array.isArray(data) && data.length >= 10) ? data : null;
+      } catch (err) { 
+        alert("NETZWERK-FEHLER: " + err.message);
+        return null; 
+      }
     }
 
     function nextQuizQuestion() {
