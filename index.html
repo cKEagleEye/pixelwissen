@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixelwissen - Das Lern- & Belohnungsspiel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .card { transition: all 0.2s ease-in-out; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); }
+  </style>
+</head>
+<body class="bg-slate-900 font-sans min-h-screen text-slate-100">
+
+  <header class="bg-slate-800 text-white p-4 shadow-xl border-b border-slate-700 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto flex justify-between items-center">
+      <h1 onclick="showView('dashboard')" class="text-xl font-black tracking-wider flex items-center gap-2.5 text-indigo-400 cursor-pointer">
+        PIXELWISSEN
+      </h1>
+      <div class="flex items-center gap-4">
+        <div class="bg-slate-950 border border-yellow-500/50 px-3.5 py-1.5 rounded-full text-yellow-400 font-bold flex items-center gap-2 shadow-inner text-sm">
+          <span id="coin-count">0</span> Münzen
+        </div>
+        <button onclick="toggleParentModal()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs px-3 py-1.5 rounded-lg border border-slate-500 font-medium transition">
+          🔒 Eltern-Bereich
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto p-4 space-y-6">
+    <div id="view-dashboard" class="space-y-6">
+      <section>
+        <h2 class="text-sm uppercase font-bold tracking-widest mb-3 text-slate-400">⚡ Wähle deine Mission</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div onclick="openSubject('mathe')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-cyan-500 cursor-pointer flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-lg text-white">Mathematik</h3>
+              <div class="p-2.5 bg-cyan-500/10 rounded-xl text-cyan-400">📐</div>
+            </div>
+            <p class="text-xs text-slate-400">Dynamischer Generator</p>
+          </div>
+          <div onclick="openSubject('deutsch')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-rose-500 cursor-pointer flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-lg text-white">Deutsch</h3>
+              <div class="p-2.5 bg-rose-500/10 rounded-xl text-rose-400">📚</div>
+            </div>
+            <p class="text-xs text-slate-400">⚡ Serverless KI</p>
+          </div>
+          <div onclick="openSubject('englisch')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-amber-400 cursor-pointer flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-lg text-white">Englisch</h3>
+              <div class="p-2.5 bg-amber-400/10 rounded-xl text-amber-400 font-black text-sm">EN</div>
+            </div>
+            <p class="text-xs text-slate-400">⚡ Serverless KI</p>
+          </div>
+          <div onclick="openSubject('sachkunde')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-emerald-500 cursor-pointer flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-lg text-white">Sachkunde</h3>
+              <div class="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-400">🌍</div>
+            </div>
+            <p class="text-xs text-slate-400">⚡ Serverless KI</p>
+          </div>
+          <div onclick="openSubject('tippen')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-purple-500 cursor-pointer flex flex-col justify-between col-span-2 sm:col-span-1">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-lg text-white">10-Finger-Tippen</h3>
+              <div class="p-2.5 bg-purple-500/10 rounded-xl text-purple-400">⌨️</div>
+            </div>
+            <p class="text-xs text-slate-400">Zufalls-Texte</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">🎁 Wunsch-Shop</h2>
+          <button onclick="openWishModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm px-4 py-2 rounded-xl font-bold transition">+ Wunsch eintragen</button>
+        </div>
+        <div id="wish-list" class="space-y-3"></div>
+      </section>
+    </div>
+
+    <div id="view-results" class="hidden bg-slate-800 p-8 rounded-2xl border border-slate-700 text-center space-y-6 shadow-2xl max-w-xl mx-auto my-8">
+      <div class="text-5xl">🎉</div>
+      <h2 id="result-title" class="text-2xl font-black text-white">Mission Erfolgreich!</h2>
+      <p id="result-msg" class="text-slate-300 text-sm"></p>
+      <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-700 text-yellow-400 font-extrabold text-xl">
+        Gewinn: <span id="result-coins">0</span> 🪙 Münzen
+      </div>
+      <div class="flex justify-center gap-3 pt-2">
+        <button onclick="showView('dashboard')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition">Zurück zum Dashboard</button>
+      </div>
+    </div>
+
+    <div id="view-mathe" class="hidden space-y-6">
+      <div class="flex justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700">
+        <button onclick="showView('dashboard')" class="text-xs bg-slate-700 text-white px-3 py-1.5 rounded-lg font-bold">← Zurück</button>
+        <h2 class="text-lg font-bold text-cyan-400">📐 Mathe-Arena</h2>
+        <select id="mathe-mode-select" onchange="startMatheSession(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white p-2 rounded-xl">
+          <option value="kopfrechnen">Kopfrechnen (Sprint)</option>
+          <option value="groese_zahlen">Zahlenraum bis 1 Mio.</option>
+          <option value="gym_challenge">Gymnasium-Challenge</option>
+        </select>
+      </div>
+      <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 text-center space-y-6">
+        <div class="flex justify-between items-center text-xs text-slate-400 border-b border-slate-700 pb-3">
+          <div id="math-progress" class="text-cyan-400 font-bold">Aufgabe 1 / 10</div>
+          <div class="text-yellow-400 font-bold">🪙 10 Münzen</div>
+        </div>
+        <div class="space-y-4">
+          <p id="math-question-text" class="text-xl sm:text-2xl font-black text-white min-h-[60px] flex items-center justify-center"></p>
+          <div class="flex justify-center gap-3 max-w-xs mx-auto">
+            <input type="number" id="math-answer" placeholder="Antwort..." class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-center text-xl font-bold text-white focus:outline-none focus:border-cyan-500">
+            <button onclick="checkMathAnswer()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-3 rounded-xl font-bold">OK</button>
+          </div>
+          <div id="math-feedback" class="text-sm font-bold h-6"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-quiz" class="hidden space-y-6">
+      <div class="flex justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700">
+        <button onclick="showView('dashboard')" class="text-xs bg-slate-700 text-white px-3 py-1.5 rounded-lg font-bold">← Zurück</button>
+        <h2 id="quiz-title" class="text-lg font-bold text-white">Quiz</h2>
+        <select id="quiz-mode-select" onchange="changeQuizMode(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white p-2 rounded-xl max-w-[140px] truncate"></select>
+      </div>
+
+      <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 text-center space-y-6">
+        <div class="flex justify-between items-center text-xs text-slate-400 border-b border-slate-700 pb-3">
+          <div id="quiz-progress" class="font-bold">Aufgabe 1 / 10</div>
+          <div id="quiz-ai-badge" class="text-indigo-400 font-bold">⚡ Serverless KI Live</div>
+        </div>
+        <div id="quiz-loading" class="hidden py-8 space-y-3">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-400 mx-auto"></div>
+          <p class="text-xs text-slate-400">Generiere neue Aufgaben...</p>
+        </div>
+        <div id="quiz-question-box" class="space-y-6">
+          <p id="quiz-question-text" class="text-lg sm:text-xl font-bold text-white min-h-[60px] flex items-center justify-center px-4"></p>
+          <div id="quiz-options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md mx-auto"></div>
+          <div id="quiz-feedback" class="text-sm font-bold h-6"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-tippen" class="hidden space-y-6">
+      <div class="flex justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700">
+        <button onclick="showView('dashboard')" class="text-xs bg-slate-700 text-white px-3 py-1.5 rounded-lg font-bold">← Zurück</button>
+        <h2 class="text-lg font-bold text-purple-400">⌨️ Tipptraining</h2>
+        <select id="level-select" onchange="startTypingLevel(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white p-2 rounded-xl">
+          <option value="1">Level 1: F & J</option>
+          <option value="2">Level 2: D & K</option>
+          <option value="3">Level 3: S, L, A, Ö</option>
+          <option value="4">Level 4: Volle Grundreihe</option>
+          <option value="5">Level 5: Echte Wörter</option>
+        </select>
+      </div>
+      <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 text-center space-y-4">
+        <div class="flex justify-center gap-6 text-xs text-slate-400">
+          <div>Genauigkeit: <span id="accuracy-val" class="text-emerald-400 font-bold">100%</span></div>
+          <div>Tempo: <span id="wpm-val" class="text-cyan-400 font-bold">0 WPM</span></div>
+        </div>
+        <div id="text-display" class="font-mono text-2xl tracking-widest p-4 bg-slate-950 rounded-xl border border-slate-700 min-h-[80px] flex items-center justify-center flex-wrap gap-1"></div>
+      </div>
+    </div>
+  </main>
+
+  <div id="wish-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-sm w-full space-y-4">
+      <h3 class="font-bold text-lg text-white">Neuen Wunsch eintragen</h3>
+      <input type="text" id="wish-title" placeholder="z.B. 30 Min. Medienzeit" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-sm text-white focus:outline-none">
+      <div class="flex justify-end gap-2">
+        <button onclick="closeWishModal()" class="px-4 py-2 text-slate-400 hover:text-white text-xs">Abbrechen</button>
+        <button onclick="submitWish()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold">Eintragen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="parent-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-md w-full space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-lg text-indigo-400">🔒 Eltern-Verwaltung</h3>
+        <button onclick="toggleParentModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <div id="pin-section" class="space-y-3">
+        <p class="text-xs text-slate-400">Bitte Eltern-PIN eingeben (Standard: 511201):</p>
+        <input type="password" id="parent-pin" class="bg-slate-900 border border-slate-700 p-3 rounded-xl text-center font-bold tracking-widest text-lg w-full text-white" maxlength="6">
+        <button onclick="checkPin()" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl text-xs font-bold">Freischalten</button>
+      </div>
+      <div id="parent-panel" class="hidden space-y-4">
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 flex justify-between items-center">
+          <span class="text-xs font-medium text-slate-300">Münzen anpassen:</span>
+          <div class="flex gap-2">
+            <button onclick="adjustCoins(-10)" class="bg-rose-500/20 text-rose-400 px-3 py-1 rounded-lg text-xs font-bold">-10</button>
+            <button onclick="adjustCoins(10)" class="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-lg text-xs font-bold">+10</button>
+          </div>
+        </div>
+        <div id="parent-wish-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let appData = { coins: 50, pin: "511201", wishes: [], history: {} };
+    let activeSubject = null;
+
+    window.onload = function() {
+      loadData();
+      window.addEventListener('keydown', handleKeyPress);
+      const mathAns = document.getElementById('math-answer');
+      if (mathAns) mathAns.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') checkMathAnswer();
+      });
+    };
+
+    function shuffleArray(array) {
+      let arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function checkDailyLimit(subject, mode) {
+      const today = new Date().toISOString().split('T')[0];
+      const key = `${subject}_${mode}`;
+      if (appData.history && appData.history[key] === today) {
+        alert("⏳ Du hast diese Mission heute schon gemeistert!");
+        return false;
+      }
+      return true;
+    }
+
+    function markDailyLimit(subject, mode) {
+      if (!appData.history) appData.history = {};
+      const today = new Date().toISOString().split('T')[0];
+      appData.history[`${subject}_${mode}`] = today;
+      saveData();
+    }
+
+    function showView(viewName) {
+      ['view-dashboard', 'view-tippen', 'view-mathe', 'view-quiz', 'view-results'].forEach(v => {
+        const el = document.getElementById(v);
+        if(el) el.classList.add('hidden');
+      });
+      const target = document.getElementById('view-' + viewName);
+      if(target) target.classList.remove('hidden');
+    }
+
+    function openSubject(subject) {
+      activeSubject = subject;
+      if (subject === 'tippen') {
+        const mode = document.getElementById('level-select').value;
+        if(checkDailyLimit('tippen', mode)) { showView('tippen'); startTypingLevel(mode); }
+      } else if (subject === 'mathe') {
+        const mode = document.getElementById('mathe-mode-select').value;
+        if(checkDailyLimit('mathe', mode)) { showView('mathe'); startMatheSession(mode); }
+      } else {
+        showView('quiz'); initQuizMode(subject);
+      }
+    }
+
+    let mathState = { currentQuestion: 0, totalQuestions: 10, correctCount: 0, mode: 'kopfrechnen', currentAnswer: null };
+
+    function startMatheSession(mode) {
+      if(!checkDailyLimit('mathe', mode)) { showView('dashboard'); return; }
+      mathState.mode = mode || 'kopfrechnen';
+      mathState.currentQuestion = 0; mathState.correctCount = 0;
+      nextMathQuestion();
+    }
+
+    function generateMathQuestion() {
+      let qText = ""; let ans = 0;
+      if (mathState.mode === 'kopfrechnen') {
+        const ops = ['+', '-', '*', '/'];
+        const op = ops[Math.floor(Math.random() * ops.length)];
+        if (op === '+') {
+          let a = Math.floor(Math.random() * 400) + 15; let b = Math.floor(Math.random() * 400) + 15;
+          qText = `${a} + ${b} = ?`; ans = a + b;
+        } else if (op === '-') {
+          let a = Math.floor(Math.random() * 800) + 50; let b = Math.floor(Math.random() * a);
+          qText = `${a} - ${b} = ?`; ans = a - b;
+        } else if (op === '*') {
+          let a = Math.floor(Math.random() * 15) + 3; let b = Math.floor(Math.random() * 12) + 2;
+          qText = `${a} • ${b} = ?`; ans = a * b;
+        } else if (op === '/') {
+          let b = Math.floor(Math.random() * 9) + 2; let res = Math.floor(Math.random() * 15) + 2;
+          qText = `${b * res} : ${b} = ?`; ans = res;
+        }
+      } else if (mathState.mode === 'groese_zahlen') {
+        let a = Math.floor(Math.random() * 800000) + 50000; let b = Math.floor(Math.random() * 150000) + 10000;
+        qText = `${a.toLocaleString('de-DE')} + ${b.toLocaleString('de-DE')} = ?`; ans = a + b;
+      } else {
+        let l = Math.floor(Math.random() * 12) + 4; let b = Math.floor(Math.random() * 8) + 2;
+        qText = `Ein Rechteck ist ${l}cm lang und ${b}cm breit. Umfang in cm?`; ans = 2 * (l + b);
+      }
+      mathState.currentAnswer = ans;
+      document.getElementById('math-question-text').innerText = qText;
+    }
+
+    function nextMathQuestion() {
+      if (mathState.currentQuestion >= mathState.totalQuestions) {
+        finishMathSession(); return;
+      }
+      mathState.currentQuestion++;
+      document.getElementById('math-progress').innerText = `Aufgabe ${mathState.currentQuestion} / ${mathState.totalQuestions}`;
+      document.getElementById('math-feedback').innerText = "";
+      document.getElementById('math-answer').value = "";
+      generateMathQuestion();
+    }
+
+    function checkMathAnswer() {
+      const input = document.getElementById('math-answer').value;
+      if (input === "") return;
+      const userAns = parseInt(input);
+      const feedback = document.getElementById('math-feedback');
+      if (userAns === mathState.currentAnswer) {
+        mathState.correctCount++;
+        feedback.className = "text-sm font-bold text-emerald-400"; feedback.innerText = "✓ Richtig!";
+      } else {
+        feedback.className = "text-sm font-bold text-rose-400"; feedback.innerText = `❌ Richtig war: ${mathState.currentAnswer}`;
+      }
+      setTimeout(() => { nextMathQuestion(); }, 1200);
+    }
+
+    function finishMathSession() {
+      appData.coins += mathState.correctCount; 
+      markDailyLimit('mathe', mathState.mode);
+      renderApp();
+      document.getElementById('result-title').innerText = "Mathe-Champion! 📐";
+      document.getElementById('result-msg').innerText = `Du hast ${mathState.correctCount} von 10 richtig gelöst.`;
+      document.getElementById('result-coins').innerText = mathState.correctCount;
+      showView('results');
+    }
+
+    let typingState = { currentText: "", currentIndex: 0, errors: 0, startTime: null, mode: '' };
+
+    function generateDynamicTypingText(lvl) {
+      const words = ["falla", "kahl", "dachs", "jagd", "falter", "fluss", "kalb", "glas", "hals", "schafe", "harke", "saft", "geld", "haus", "maus", "laufen"];
+      return shuffleArray(words).slice(0, 6).join(" ");
+    }
+
+    function startTypingLevel(lvl) {
+      if(!checkDailyLimit('tippen', lvl)) { showView('dashboard'); return; }
+      typingState = { currentText: generateDynamicTypingText(lvl), currentIndex: 0, errors: 0, startTime: null, mode: lvl };
+      renderTextDisplay();
+    }
+
+    function renderTextDisplay() {
+      const container = document.getElementById('text-display'); container.innerHTML = "";
+      for (let i = 0; i < typingState.currentText.length; i++) {
+        const charSpan = document.createElement('span');
+        charSpan.innerText = typingState.currentText[i] === ' ' ? '␣' : typingState.currentText[i];
+        charSpan.className = "px-1 rounded ";
+        if (i < typingState.currentIndex) charSpan.classList.add("text-slate-600");
+        else if (i === typingState.currentIndex) charSpan.classList.add("bg-purple-600", "text-white", "animate-pulse");
+        else charSpan.classList.add("text-slate-300");
+        container.appendChild(charSpan);
+      }
+    }
+
+    function handleKeyPress(e) {
+      if (document.getElementById('view-tippen').classList.contains('hidden') || typingState.currentIndex >= typingState.currentText.length) return;
+      let expected = typingState.currentText[typingState.currentIndex].toLowerCase();
+      let pressed = e.key.toLowerCase();
+      if (pressed === expected || (expected === ' ' && e.code === 'Space')) {
+        typingState.currentIndex++;
+        if (typingState.currentIndex === typingState.currentText.length) {
+          appData.coins += 10; markDailyLimit('tippen', typingState.mode);
+          renderApp();
+          document.getElementById('result-title').innerText = "Tipp-Held! ⌨️";
+          document.getElementById('result-msg').innerText = "Übung abgeschlossen!";
+          document.getElementById('result-coins').innerText = 10;
+          showView('results');
+        }
+      }
+      renderTextDisplay();
+    }
+
+    let quizState = { subject: '', mode: '', questions: [], currentIdx: 0, correctCount: 0 };
+    const quizModes = {
+      deutsch: { title: "📚 Deutsch-Meister", modes: { rechtschreibung: "Rechtschreibung", grammatik: "Grammatik" }},
+      englisch: { title: "🇬🇧 English Hero", modes: { vokabeln: "Wortschatz", phrases: "Phrases" }},
+      sachkunde: { title: "🌍 Sachkunde-Forscher", modes: { geografie: "Geografie", natur: "Natur" }}
+    };
+
+    function initQuizMode(subject) {
+      quizState.subject = subject;
+      const conf = quizModes[subject];
+      document.getElementById('quiz-title').innerText = conf.title;
+      const select = document.getElementById('quiz-mode-select'); select.innerHTML = "";
+      Object.entries(conf.modes).forEach(([k, v]) => { select.innerHTML += `<option value="${k}">${v}</option>`; });
+      changeQuizMode(Object.keys(conf.modes)[0]);
+    }
+
+    async function changeQuizMode(mode) {
+      if(!checkDailyLimit(quizState.subject, mode)) { showView('dashboard'); return; }
+      quizState.mode = mode;
+      quizState.currentIdx = 0; quizState.correctCount = 0;
+      
+      document.getElementById('quiz-loading').classList.remove('hidden');
+      document.getElementById('quiz-question-box').classList.add('hidden');
+      document.getElementById('quiz-ai-badge').classList.add('hidden');
+
+      let aiQ = await fetchServerQuestions(quizState.subject, mode);
+      if (aiQ && aiQ.length >= 10) {
+        quizState.questions = aiQ;
+        document.getElementById('quiz-ai-badge').classList.remove('hidden');
+      } else {
+        alert("Fehler beim Abrufen der Fragen vom Server.");
+        showView('dashboard');
+        return;
+      }
+
+      document.getElementById('quiz-loading').classList.add('hidden');
+      document.getElementById('quiz-question-box').classList.remove('hidden');
+      nextQuizQuestion();
+    }
+
+    async function fetchServerQuestions(subject, mode) {
+      try {
+        const res = await fetch(`/.netlify/functions/ask-groq`, {
+          method: 'POST', 
+          headers: { 'Content-Type': 'application/json' }, 
+          body: JSON.stringify({ subject, mode })
+        });
+        if (!res.ok) return null;
+        const data = await res.json();
+        let raw = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '').trim();
+        const parsed = JSON.parse(raw);
+        return (Array.isArray(parsed) && parsed.length >= 10) ? parsed : null;
+      } catch (err) { return null; }
+    }
+
+    function nextQuizQuestion() {
+      if (quizState.currentIdx >= 10) {
+        appData.coins += quizState.correctCount; 
+        markDailyLimit(quizState.subject, quizState.mode);
+        saveData(); renderApp();
+        document.getElementById('result-title').innerText = quizModes[quizState.subject].title;
+        document.getElementById('result-msg').innerText = `Du hast ${quizState.correctCount} von 10 richtig gelöst.`;
+        document.getElementById('result-coins').innerText = quizState.correctCount;
+        showView('results'); return;
+      }
+
+      document.getElementById('quiz-progress').innerText = `Aufgabe ${quizState.currentIdx + 1} / 10`;
+      document.getElementById('quiz-feedback').innerText = "";
+
+      const raw = quizState.questions[quizState.currentIdx];
+      const correctText = raw.options[raw.a];
+      const shuffledOptions = shuffleArray(raw.options);
+      quizState.currentCorrectIdx = shuffledOptions.indexOf(correctText);
+
+      document.getElementById('quiz-question-text').innerText = raw.q;
+      const container = document.getElementById('quiz-options-container'); container.innerHTML = "";
+      
+      shuffledOptions.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full bg-slate-900 border border-slate-700 hover:border-indigo-500 p-3.5 rounded-xl font-bold text-sm text-slate-200 transition text-center";
+        btn.innerText = opt;
+        btn.onclick = () => checkQuizAnswer(idx, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    function checkQuizAnswer(selectedIdx, btn) {
+      const feedback = document.getElementById('quiz-feedback');
+      const allBtns = document.querySelectorAll('#quiz-options-container button');
+      allBtns.forEach(b => b.disabled = true);
+
+      if (selectedIdx === quizState.currentCorrectIdx) {
+        quizState.correctCount++;
+        btn.className = "w-full bg-emerald-600 border border-emerald-500 p-3.5 rounded-xl font-bold text-sm text-white transition text-center";
+        feedback.className = "text-sm font-bold text-emerald-400"; feedback.innerText = "✓ Richtig!";
+      } else {
+        btn.className = "w-full bg-rose-600 border border-rose-500 p-3.5 rounded-xl font-bold text-sm text-white transition text-center";
+        allBtns[quizState.currentCorrectIdx].className = "w-full bg-emerald-600/40 border border-emerald-500 p-3.5 rounded-xl font-bold text-sm text-white transition text-center";
+        feedback.className = "text-sm font-bold text-rose-400"; feedback.innerText = "❌ Falsch!";
+      }
+      quizState.currentIdx++;
+      setTimeout(() => { nextQuizQuestion(); }, 1300);
+    }
+
+    function renderApp() {
+      const coinEl = document.getElementById('coin-count');
+      if (coinEl) coinEl.innerText = appData.coins;
+      const list = document.getElementById('wish-list'); 
+      if (list) {
+        list.innerHTML = '';
+        if(!appData.wishes || appData.wishes.length === 0) list.innerHTML = '<p class="text-xs text-slate-500 italic">Noch keine Wünsche eingetragen.</p>';
+        else {
+          appData.wishes.forEach(w => {
+            list.innerHTML += `<div class="flex justify-between items-center p-3.5 bg-slate-900/60 rounded-xl border border-slate-700/60"><span class="font-medium text-sm text-slate-200">${w.title}</span></div>`;
+          });
+        }
+      }
+    }
+
+    function openWishModal() { document.getElementById('wish-modal').classList.remove('hidden'); }
+    function closeWishModal() { document.getElementById('wish-modal').classList.add('hidden'); }
+    function toggleParentModal() { document.getElementById('parent-modal').classList.toggle('hidden'); document.getElementById('pin-section').classList.remove('hidden'); document.getElementById('parent-panel').classList.add('hidden'); document.getElementById('parent-pin').value = ''; }
+    
+    function submitWish() {
+      const t = document.getElementById('wish-title').value; if(!t) return;
+      if (!appData.wishes) appData.wishes = [];
+      appData.wishes.push({ id: Date.now(), title: t, cost: 10, status: 'approved' });
+      saveData(); renderApp(); closeWishModal(); document.getElementById('wish-title').value = '';
+    }
+    
+    function checkPin() {
+      const enteredPin = document.getElementById('parent-pin').value.trim();
+      if (enteredPin === "511201" || enteredPin === appData.pin) {
+        document.getElementById('pin-section').classList.add('hidden'); 
+        document.getElementById('parent-panel').classList.remove('hidden');
+      } else {
+        alert("Falsche PIN! Die Standard-PIN lautet: 511201");
+      }
+    }
+    
+    function adjustCoins(amt) { 
+      appData.coins = Math.max(0, appData.coins + amt); 
+      saveData(); 
+      renderApp(); 
+    }
+
+    function saveData() { localStorage.setItem('pixelwissen_data', JSON.stringify(appData)); }
+    
+    function loadData() {
+      const defaultData = { coins: 50, pin: "511201", wishes: [], history: {} };
+      const s = localStorage.getItem('pixelwissen_data');
+      if(s) {
+        try {
+          const parsed = JSON.parse(s);
+          appData = { ...defaultData, ...parsed };
+        } catch(e) {
+          appData = defaultData;
+        }
+      } else {
+        defaultData;
+      }
+      appData.pin = "511201";
+      renderApp();
+    }
+  </script>
+</body>
+</html>
