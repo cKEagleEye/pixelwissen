@@ -20,7 +20,7 @@ exports.handler = async function(event, context) {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: "mixtral-8x7b-32768",
         messages: [{
           role: "user",
           content: `Erstelle genau 10 Multiple-Choice-Fragen für die 4. Klasse im Fach '${subject}' (Thema: '${mode}'). Antworte AUSSCHLIESSLICH als gültiges JSON-Array im Format: [{"q":"Frage?","options":["A","B","C","D"],"a":0}] - die richtige Antwort ist bei Index 0. Kein anderer Text, nur das reine JSON.`
