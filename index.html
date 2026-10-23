@@ -8,6 +8,7 @@
   <style>
     .card { transition: all 0.2s ease-in-out; }
     .card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); }
+    option:disabled { color: #64748b; background-color: #0f172a; }
   </style>
 </head>
 <body class="bg-slate-900 font-sans min-h-screen text-slate-100">
@@ -35,42 +36,42 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div onclick="openSubject('mathe')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-cyan-500 cursor-pointer flex flex-col justify-between">
             <div class="flex items-center justify-between mb-3">
-              <h3 class="font-bold text-lg text-white">Mathematik</h3>
+              <h3 class="font-bold text-lg text-white">Mathematik <span id="flag-mathe"></span></h3>
               <div class="p-2.5 bg-cyan-500/10 rounded-xl text-cyan-400">📐</div>
             </div>
             <p class="text-xs text-slate-400">Grundrechenarten & mehr</p>
           </div>
           <div onclick="openSubject('deutsch')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-rose-500 cursor-pointer flex flex-col justify-between">
             <div class="flex items-center justify-between mb-3">
-              <h3 class="font-bold text-lg text-white">Deutsch</h3>
+              <h3 class="font-bold text-lg text-white">Deutsch <span id="flag-deutsch"></span></h3>
               <div class="p-2.5 bg-rose-500/10 rounded-xl text-rose-400">📚</div>
             </div>
             <p class="text-xs text-slate-400">⚡ Serverless KI</p>
           </div>
           <div onclick="openSubject('englisch')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-amber-400 cursor-pointer flex flex-col justify-between">
             <div class="flex items-center justify-between mb-3">
-              <h3 class="font-bold text-lg text-white">Englisch</h3>
+              <h3 class="font-bold text-lg text-white">Englisch <span id="flag-englisch"></span></h3>
               <div class="p-2.5 bg-amber-400/10 rounded-xl text-amber-400 font-black text-sm">EN</div>
             </div>
             <p class="text-xs text-slate-400">⚡ Serverless KI</p>
           </div>
           <div onclick="openSubject('turkisch')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-red-500 cursor-pointer flex flex-col justify-between">
             <div class="flex items-center justify-between mb-3">
-              <h3 class="font-bold text-lg text-white">Türkisch</h3>
+              <h3 class="font-bold text-lg text-white">Türkisch <span id="flag-turkisch"></span></h3>
               <div class="p-2.5 bg-red-500/10 rounded-xl text-red-400 font-black text-sm">TR</div>
             </div>
             <p class="text-xs text-slate-400">⚡ Serverless KI</p>
           </div>
           <div onclick="openSubject('sachkunde')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-emerald-500 cursor-pointer flex flex-col justify-between">
             <div class="flex items-center justify-between mb-3">
-              <h3 class="font-bold text-lg text-white">Sachkunde</h3>
+              <h3 class="font-bold text-lg text-white">Sachkunde <span id="flag-sachkunde"></span></h3>
               <div class="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-400">🌍</div>
             </div>
             <p class="text-xs text-slate-400">⚡ Serverless KI</p>
           </div>
           <div onclick="openSubject('tippen')" class="card bg-slate-800 p-5 rounded-2xl border-l-4 border-purple-500 cursor-pointer flex flex-col justify-between">
             <div class="flex items-center justify-between mb-3">
-              <h3 class="font-bold text-lg text-white">10-Finger-Tippen</h3>
+              <h3 class="font-bold text-lg text-white">Tippen <span id="flag-tippen"></span></h3>
               <div class="p-2.5 bg-purple-500/10 rounded-xl text-purple-400">⌨️</div>
             </div>
             <p class="text-xs text-slate-400">Zufalls-Texte</p>
@@ -103,14 +104,7 @@
       <div class="flex justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700">
         <button onclick="showView('dashboard')" class="text-xs bg-slate-700 text-white px-3 py-1.5 rounded-lg font-bold">← Zurück</button>
         <h2 class="text-lg font-bold text-cyan-400">📐 Mathe-Arena</h2>
-        <select id="mathe-mode-select" onchange="startMatheSession(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white p-2 rounded-xl">
-          <option value="addition">Addition (+)</option>
-          <option value="subtraktion">Subtraktion (-)</option>
-          <option value="multiplikation">Multiplikation (•)</option>
-          <option value="division">Division (:)</option>
-          <option value="sachaufgaben">Sachaufgaben</option>
-          <option value="groese_zahlen">Zahlenraum bis 1 Mio.</option>
-        </select>
+        <select id="mathe-mode-select" onchange="startMatheSession(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white p-2 rounded-xl"></select>
       </div>
       <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 text-center space-y-6">
         <div class="flex justify-between items-center text-xs text-slate-400 border-b border-slate-700 pb-3">
@@ -156,13 +150,7 @@
       <div class="flex justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700">
         <button onclick="showView('dashboard')" class="text-xs bg-slate-700 text-white px-3 py-1.5 rounded-lg font-bold">← Zurück</button>
         <h2 class="text-lg font-bold text-purple-400">⌨️ Tipptraining</h2>
-        <select id="level-select" onchange="startTypingLevel(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white p-2 rounded-xl">
-          <option value="1">Level 1: F & J</option>
-          <option value="2">Level 2: D & K</option>
-          <option value="3">Level 3: S, L, A, Ö</option>
-          <option value="4">Level 4: Volle Grundreihe</option>
-          <option value="5">Level 5: Echte Wörter</option>
-        </select>
+        <select id="level-select" onchange="startTypingLevel(this.value)" class="bg-slate-900 border border-slate-700 text-xs text-white p-2 rounded-xl"></select>
       </div>
       <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 text-center space-y-4">
         <div class="flex justify-center gap-6 text-xs text-slate-400">
@@ -213,6 +201,13 @@
     let appData = { coins: 50, pin: "511201", wishes: [], history: {} };
     let activeSubject = null;
 
+    const quizModes = {
+      deutsch: { title: "📚 Deutsch-Meister", modes: { rechtschreibung: "Rechtschreibung", grammatik: "Grammatik" }},
+      englisch: { title: "🇬🇧 English Hero", modes: { vokabeln: "Wortschatz", phrases: "Sätze mit Lücken" }},
+      turkisch: { title: "🇹🇷 Türkçe / Türkisch", modes: { vokabeln: "Wortschatz", grammatik: "Alltagssätze" }},
+      sachkunde: { title: "🌍 Sachkunde-Forscher", modes: { geografie: "Geografie", natur: "Natur" }}
+    };
+
     window.onload = function() {
       loadData();
       window.addEventListener('keydown', handleKeyPress);
@@ -231,21 +226,43 @@
       return arr;
     }
 
-    function checkDailyLimit(subject, mode) {
+    function getUsageCount(subject, mode) {
       const today = new Date().toISOString().split('T')[0];
       const key = `${subject}_${mode}`;
-      if (appData.history && appData.history[key] === today) {
-        alert("⏳ Du hast diese Mission heute schon gemeistert!");
-        return false;
+      if (!appData.history) appData.history = {};
+      const record = appData.history[key];
+      if (record && record.date === today) {
+        return record.count || 0;
       }
-      return true;
+      return 0;
     }
 
-    function markDailyLimit(subject, mode) {
-      if (!appData.history) appData.history = {};
+    function canPlayMode(subject, mode) {
+      return getUsageCount(subject, mode) < 2;
+    }
+
+    function incrementUsage(subject, mode) {
       const today = new Date().toISOString().split('T')[0];
-      appData.history[`${subject}_${mode}`] = today;
+      const key = `${subject}_${mode}`;
+      if (!appData.history) appData.history = {};
+      let record = appData.history[key];
+      if (!record || record.date !== today) {
+        appData.history[key] = { date: today, count: 1 };
+      } else {
+        record.count += 1;
+      }
       saveData();
+      renderApp();
+    }
+
+    function isSubjectFullyExhausted(subject) {
+      let modes = [];
+      if (subject === 'mathe') modes = ['addition', 'subtraktion', 'multiplikation', 'division', 'sachaufgaben', 'groese_zahlen'];
+      else if (subject === 'tippen') modes = ['1', '2', '3', '4', '5'];
+      else if (quizModes[subject]) modes = Object.keys(quizModes[subject].modes);
+      
+      if (modes.length === 0) return false;
+      return modes.every(m => !canPlayMode(subject, m));
     }
 
     function showView(viewName) {
@@ -254,17 +271,32 @@
         if(el) el.classList.add('hidden');
       });
       const target = document.getElementById('view-' + viewName);
-      if(target) target.classList.remove('hidden');
+      if(target) {
+        target.classList.remove('hidden');
+        if(viewName === 'dashboard') renderApp();
+      }
     }
 
     function openSubject(subject) {
       activeSubject = subject;
       if (subject === 'tippen') {
-        const mode = document.getElementById('level-select').value;
-        if(checkDailyLimit('tippen', mode)) { showView('tippen'); startTypingLevel(mode); }
+        updateTippenSelect();
+        const select = document.getElementById('level-select');
+        const mode = select.value;
+        if(!canPlayMode('tippen', mode)) {
+          alert("⏳ Alle Tipp-Level sind heute schon je 2 Mal gespielt worden!");
+          return;
+        }
+        showView('tippen'); startTypingLevel(mode);
       } else if (subject === 'mathe') {
-        const mode = document.getElementById('mathe-mode-select').value;
-        if(checkDailyLimit('mathe', mode)) { showView('mathe'); startMatheSession(mode); }
+        updateMatheSelect();
+        const select = document.getElementById('mathe-mode-select');
+        const mode = select.value;
+        if(!canPlayMode('mathe', mode)) {
+          alert("⏳ Alle Mathe-Missionen sind heute schon je 2 Mal gespielt worden!");
+          return;
+        }
+        showView('mathe'); startMatheSession(mode);
       } else {
         showView('quiz'); initQuizMode(subject);
       }
@@ -272,8 +304,31 @@
 
     let mathState = { currentQuestion: 0, totalQuestions: 10, correctCount: 0, mode: 'addition', currentAnswer: null };
 
+    function updateMatheSelect() {
+      const select = document.getElementById('mathe-mode-select');
+      const modes = [
+        {k: 'addition', v: 'Addition (+)'},
+        {k: 'subtraktion', v: 'Subtraktion (-)'},
+        {k: 'multiplikation', v: 'Multiplikation (•)'},
+        {k: 'division', v: 'Division (:)'},
+        {k: 'sachaufgaben', v: 'Sachaufgaben'},
+        {k: 'groese_zahlen', v: 'Zahlenraum bis 1 Mio.'}
+      ];
+      select.innerHTML = '';
+      modes.forEach(m => {
+        let count = getUsageCount('mathe', m.k);
+        let suffix = count >= 2 ? " (2/2 - Erledigt)" : ` (${count}/2)`;
+        select.innerHTML += `<option value="${m.k}" ${count >= 2 ? 'disabled' : ''}>${m.v}${suffix}</option>`;
+      });
+      let available = modes.find(m => canPlayMode('mathe', m.k));
+      if (available) select.value = available.k;
+    }
+
     function startMatheSession(mode) {
-      if(!checkDailyLimit('mathe', mode)) { showView('dashboard'); return; }
+      if(!canPlayMode('mathe', mode)) {
+        alert("⏳ Diese Kategorie wurde heute schon 2 Mal gespielt!");
+        showView('dashboard'); return;
+      }
       mathState.mode = mode || 'addition';
       mathState.currentQuestion = 0; mathState.correctCount = 0;
       nextMathQuestion();
@@ -346,8 +401,7 @@
 
     function finishMathSession() {
       appData.coins += mathState.correctCount; 
-      markDailyLimit('mathe', mathState.mode);
-      renderApp();
+      incrementUsage('mathe', mathState.mode);
       document.getElementById('result-title').innerText = "Mathe-Champion! 📐";
       document.getElementById('result-msg').innerText = `Du hast ${mathState.correctCount} von 10 richtig gelöst.`;
       document.getElementById('result-coins').innerText = mathState.correctCount;
@@ -356,13 +410,35 @@
 
     let typingState = { currentText: "", currentIndex: 0, errors: 0, startTime: null, mode: '' };
 
+    function updateTippenSelect() {
+      const select = document.getElementById('level-select');
+      const levels = [
+        {k: '1', v: 'Level 1: F & J'},
+        {k: '2', v: 'Level 2: D & K'},
+        {k: '3', v: 'Level 3: S, L, A, Ö'},
+        {k: '4', v: 'Level 4: Volle Grundreihe'},
+        {k: '5', v: 'Level 5: Echte Wörter'}
+      ];
+      select.innerHTML = '';
+      levels.forEach(l => {
+        let count = getUsageCount('tippen', l.k);
+        let suffix = count >= 2 ? " (2/2 - Erledigt)" : ` (${count}/2)`;
+        select.innerHTML += `<option value="${l.k}" ${count >= 2 ? 'disabled' : ''}>${l.v}${suffix}</option>`;
+      });
+      let available = levels.find(l => canPlayMode('tippen', l.k));
+      if (available) select.value = available.k;
+    }
+
     function generateDynamicTypingText(lvl) {
       const words = ["falla", "kahl", "dachs", "jagd", "falter", "fluss", "kalb", "glas", "hals", "schafe", "harke", "saft", "geld", "haus", "maus", "laufen"];
       return shuffleArray(words).slice(0, 6).join(" ");
     }
 
     function startTypingLevel(lvl) {
-      if(!checkDailyLimit('tippen', lvl)) { showView('dashboard'); return; }
+      if(!canPlayMode('tippen', lvl)) {
+        alert("⏳ Dieses Tipp-Level wurde heute schon 2 Mal gespielt!");
+        showView('dashboard'); return;
+      }
       typingState = { currentText: generateDynamicTypingText(lvl), currentIndex: 0, errors: 0, startTime: null, mode: lvl };
       renderTextDisplay();
     }
@@ -387,8 +463,8 @@
       if (pressed === expected || (expected === ' ' && e.code === 'Space')) {
         typingState.currentIndex++;
         if (typingState.currentIndex === typingState.currentText.length) {
-          appData.coins += 10; markDailyLimit('tippen', typingState.mode);
-          renderApp();
+          appData.coins += 10; 
+          incrementUsage('tippen', typingState.mode);
           document.getElementById('result-title').innerText = "Tipp-Held! ⌨️";
           document.getElementById('result-msg').innerText = "Übung abgeschlossen!";
           document.getElementById('result-coins').innerText = 10;
@@ -399,24 +475,36 @@
     }
 
     let quizState = { subject: '', mode: '', questions: [], currentIdx: 0, correctCount: 0 };
-    const quizModes = {
-      deutsch: { title: "📚 Deutsch-Meister", modes: { rechtschreibung: "Rechtschreibung", grammatik: "Grammatik" }},
-      englisch: { title: "🇬🇧 English Hero", modes: { vokabeln: "Wortschatz", phrases: "Sätze mit Lücken" }},
-      turkisch: { title: "🇹🇷 Türkçe / Türkisch", modes: { vokabeln: "Wortschatz", grammatik: "Alltagssätze" }},
-      sachkunde: { title: "🌍 Sachkunde-Forscher", modes: { geografie: "Geografie", natur: "Natur" }}
-    };
 
     function initQuizMode(subject) {
       quizState.subject = subject;
       const conf = quizModes[subject];
       document.getElementById('quiz-title').innerText = conf.title;
-      const select = document.getElementById('quiz-mode-select'); select.innerHTML = "";
-      Object.entries(conf.modes).forEach(([k, v]) => { select.innerHTML += `<option value="${k}">${v}</option>`; });
-      changeQuizMode(Object.keys(conf.modes)[0]);
+      const select = document.getElementById('quiz-mode-select'); 
+      select.innerHTML = "";
+      let modeKeys = Object.keys(conf.modes);
+      modeKeys.forEach(k => {
+        let count = getUsageCount(subject, k);
+        let suffix = count >= 2 ? " (2/2 - Erledigt)" : ` (${count}/2)`;
+        select.innerHTML += `<option value="${k}" ${count >= 2 ? 'disabled' : ''}>${conf.modes[k]}${suffix}</option>`;
+      });
+
+      let availableMode = modeKeys.find(k => canPlayMode(subject, k)) || modeKeys[0];
+      select.value = availableMode;
+
+      if (!canPlayMode(subject, availableMode)) {
+        alert("⏳ Alle Kategorien in diesem Fach wurden heute schon je 2 Mal gespielt!");
+        showView('dashboard');
+        return;
+      }
+      changeQuizMode(availableMode);
     }
 
     async function changeQuizMode(mode) {
-      if(!checkDailyLimit(quizState.subject, mode)) { showView('dashboard'); return; }
+      if(!canPlayMode(quizState.subject, mode)) {
+        alert("⏳ Diese Kategorie wurde heute schon 2 Mal gespielt!");
+        showView('dashboard'); return;
+      }
       quizState.mode = mode;
       quizState.currentIdx = 0; quizState.correctCount = 0;
       
@@ -455,8 +543,7 @@
     function nextQuizQuestion() {
       if (quizState.currentIdx >= 10) {
         appData.coins += quizState.correctCount; 
-        markDailyLimit(quizState.subject, quizState.mode);
-        saveData(); renderApp();
+        incrementUsage(quizState.subject, quizState.mode);
         document.getElementById('result-title').innerText = quizModes[quizState.subject].title;
         document.getElementById('result-msg').innerText = `Du hast ${quizState.correctCount} von 10 richtig gelöst.`;
         document.getElementById('result-coins').innerText = quizState.correctCount;
@@ -504,6 +591,16 @@
     function renderApp() {
       const coinEl = document.getElementById('coin-count');
       if (coinEl) coinEl.innerText = appData.coins;
+
+      // Update dashboard flags
+      const subjects = ['mathe', 'deutsch', 'englisch', 'turkisch', 'sachkunde', 'tippen'];
+      subjects.forEach(subj => {
+        const flagEl = document.getElementById(`flag-${subj}`);
+        if (flagEl) {
+          flagEl.innerHTML = isSubjectFullyExhausted(subj) ? ' 🚩' : '';
+        }
+      });
+
       const list = document.getElementById('wish-list'); 
       if (list) {
         list.innerHTML = '';
