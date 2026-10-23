@@ -8,12 +8,11 @@ exports.handler = async function(event, context) {
     const apiKey = process.env.GROQ_API_KEY;
 
     if (!apiKey) {
-      console.error("FEHLER: GROQ_API_KEY ist in Netlify nicht hinterlegt!");
-      return { statusCode: 500, body: JSON.stringify({ error: 'API Key nicht in Netlify konfiguriert' }) };
+      return { statusCode: 500, body: JSON.stringify({ error: 'API Key nicht konfiguriert' }) };
     }
 
     const randomSeed = Math.floor(Math.random() * 100000);
-    const promptText = `Erstelle genau 10 brandneue Multiple-Choice-Fragen für die 4. Klasse im Fach '${subject}' (Thema: '${mode}'). Seed: ${randomSeed}. Antworte AUSSCHLIESSLICH als gültiges JSON-Array im Format: [{"q":"Frage?","options":["A","B","C","D"],"a":0}] - die richtige Antwort ist bei Index 0. Kein anderer Text, nur das reine JSON.`;
+    const promptText = `Erstelle genau 10 Multiple-Choice-Fragen für die 4. Klasse im Fach '${subject}' (Thema: '${mode}'). Seed: ${randomSeed}. Antworte AUSSCHLIESSLICH als gültiges JSON-Array im Format: [{"q":"Frage?","options":["A","B","C","D"],"a":0}] - die richtige Antwort ist bei Index 0. Kein anderer Text, nur das reine JSON.`;
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -30,17 +29,21 @@ exports.handler = async function(event, context) {
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error("GROQ API FEHLER:", response.status, errText);
       return { statusCode: response.status, body: errText };
     }
 
     const data = await response.json();
+    let content = data.choices[0].message.content;
+    
+    // Bereinige Markdown-Formatierungen und parse das JSON direkt auf dem Server
+    let cleaned = content.replace(/```json/g, '').replace(/```/g, '').trim();
+    let parsed = JSON.parse(cleaned);
+
     return {
       statusCode: 200,
-      body: JSON.stringify(data)
+      body: JSON.stringify(parsed)
     };
   } catch (error) {
-    console.error("SERVER FUNKTIONS-FEHLER:", error.message);
     return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
   }
 };
