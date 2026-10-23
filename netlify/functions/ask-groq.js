@@ -1,18 +1,17 @@
 exports.handler = async function(event, context) {
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+    return { statusCode: 405, body: JSON.stringify({ error: 'Method Not Allowed' }) };
   }
 
   try {
-    const { subject, mode } = JSON.parse(event.body);
+    const body = JSON.parse(event.body || '{}');
+    const subject = body.subject || 'Allgemein';
+    const mode = body.mode || 'Standard';
     const apiKey = process.env.GROQ_API_KEY;
 
     if (!apiKey) {
-      return { statusCode: 500, body: JSON.stringify({ error: 'API Key nicht konfiguriert' }) };
+      return { statusCode: 500, body: JSON.stringify({ error: 'GROQ_API_KEY ist in Netlify nicht hinterlegt!' }) };
     }
-
-    const randomSeed = Math.floor(Math.random() * 100000);
-    const promptText = `Erstelle genau 10 Multiple-Choice-Fragen für die 4. Klasse im Fach '${subject}' (Thema: '${mode}'). Seed: ${randomSeed}. Antworte AUSSCHLIESSLICH als gültiges JSON-Array im Format: [{"q":"Frage?","options":["A","B","C","D"],"a":0}] - die richtige Antwort ist bei Index 0. Kein anderer Text, nur das reine JSON.`;
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -22,20 +21,27 @@ exports.handler = async function(event, context) {
       },
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
-        messages: [{ role: "user", content: promptText }],
+        messages: [{
+          role: "user",
+          content: `Erstelle genau 10 Multiple-Choice-Fragen für die 4. Klasse im Fach '${subject}' (Thema: '${mode}'). Antworte AUSSCHLIESSLICH als gültiges JSON-Array im Format: [{"q":"Frage?","options":["A","B","C","D"],"a":0}] - die richtige Antwort ist bei Index 0. Kein anderer Text, nur das reine JSON.`
+        }],
         temperature: 0.7
       })
     });
 
+    const responseText = await response.text();
     if (!response.ok) {
-      const errText = await response.text();
-      return { statusCode: response.status, body: errText };
+      return { statusCode: response.status, body: JSON.stringify({ error: `Groq-Fehler (${response.status}): ${responseText}` }) };
     }
 
-    const data = await response.json();
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      return { statusCode: 500, body: JSON.stringify({ error: 'Antwort von Groq war kein gültiges JSON.' }) };
+    }
+
     let content = data.choices[0].message.content;
-    
-    // Bereinige Markdown-Formatierungen und parse das JSON direkt auf dem Server
     let cleaned = content.replace(/```json/g, '').replace(/```/g, '').trim();
     let parsed = JSON.parse(cleaned);
 
@@ -44,6 +50,6 @@ exports.handler = async function(event, context) {
       body: JSON.stringify(parsed)
     };
   } catch (error) {
-    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
+    return { statusCode: 500, body: JSON.stringify({ error: `Server-Fehler: ${error.message}` }) };
   }
 };
