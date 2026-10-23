@@ -1,0 +1,27 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Pixelwissen",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Pixelwissen",
+  "start_url": "https://pixelwissen.netlify.app/",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "https://pixelwissen.netlify.app/favicon.ico",
+      "type": "image/x-icon",
+      "isSquare": false,
+      "isPng": false,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 0,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
+    }
+  ],
+  "description": "Das Lern- &amp; Belohnungsspiel",
+  "lang": "de"
+}
