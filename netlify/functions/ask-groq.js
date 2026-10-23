@@ -8,6 +8,7 @@ exports.handler = async function(event, context) {
     const apiKey = process.env.GROQ_API_KEY;
 
     if (!apiKey) {
+      console.error("FEHLER: GROQ_API_KEY ist in Netlify nicht hinterlegt!");
       return { statusCode: 500, body: JSON.stringify({ error: 'API Key nicht in Netlify konfiguriert' }) };
     }
 
@@ -29,6 +30,7 @@ exports.handler = async function(event, context) {
 
     if (!response.ok) {
       const errText = await response.text();
+      console.error("GROQ API FEHLER:", response.status, errText);
       return { statusCode: response.status, body: errText };
     }
 
@@ -38,6 +40,7 @@ exports.handler = async function(event, context) {
       body: JSON.stringify(data)
     };
   } catch (error) {
+    console.error("SERVER FUNKTIONS-FEHLER:", error.message);
     return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
   }
 };
