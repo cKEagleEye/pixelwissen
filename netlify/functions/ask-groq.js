@@ -14,18 +14,23 @@ exports.handler = async function(event, context) {
     }
 
     let extraHint = "";
-    if (subject === 'englisch' && mode === 'phrases') {
-      extraHint = "WICHTIG: Erstelle englische Sätze mit einer Lücke (markiert als '___'), in die das gesuchte Wort eingesetzt werden muss.";
+    let levelHint = "Niveau: 4. Klasse Grundschule, anspruchsvoll und fordernd (Vorbereitung auf den Übergang zum Gymnasium). Stelle knifflige Fragen zu Regeln, Ausnahmen und tiefergehendem Verständnis, die echtes Nachdenken erfordern.";
+
+    if (subject === 'englisch') {
+      extraHint = subject === 'englisch' && mode === 'phrases' ? "WICHTIG: Erstelle englische Sätze mit einer Lücke (markiert als '___'), in die das gesuchte Wort eingesetzt werden muss." : "";
+      levelHint = "Niveau: Spielerisch und altersgerecht für die Grundschule (Englisch).";
     } else if (subject === 'turkisch') {
       extraHint = "WICHTIG: Erstelle kinderfreundliche Türkisch-Fragen (Vokabeln oder einfache Sätze) mit deutschen Erklärungen/Fragestellungen.";
+      levelHint = "Niveau: Spielerisch und altersgerecht für die Grundschule (Türkisch).";
     }
 
     const randomSeed = Math.floor(Math.random() * 100000);
-    const promptText = `Erstelle genau 10 hochwertige Multiple-Choice-Fragen für die Grundschule im Fach '${subject}' (Thema: '${mode}'). 
+    const promptText = `Erstelle genau 10 hochwertige Multiple-Choice-Fragen für das Fach '${subject}' (Thema: '${mode}'). 
+    ${levelHint}
     ${extraHint} 
     WICHTIG: 
-    1. Nenne das gesuchte Zielwort NIEMALS direkt in der Frage (vermeide Formulierungen wie 'Wie schreibt man das Wort Haus?'). Verwende stattdessen Umschreibungen, Beispielsätze mit Lücken oder frage nach Rechtschreibregeln.
-    2. Alle 4 Antwortoptionen in 'options' müssen absolut unterschiedlich sein (keine doppelten Wörter oder Schreibweisen in derselben Aufgabe).
+    1. Nenne das gesuchte Zielwort oder die Lösung NIEMALS direkt in der Frage. Verwende stattdessen anspruchsvolle Umschreibungen, Grammatikregeln (z.B. Fälle, Zeiten, Wortarten, Rechtschreibfallen wie das/dass, seit/seid) oder logische Verknüpfungen.
+    2. Alle 4 Antwortoptionen in 'options' müssen absolut unterschiedlich sein (keine doppelten Einträge) und plausible Fehler beinhalten, um das Kind zu fordern.
     Seed: ${randomSeed}. 
     Antworte AUSSCHLIESSLICH als gültiges JSON-Array im Format: [{"q":"Frage?","options":["A","B","C","D"],"a":0}] - die richtige Antwort ist bei Index 0. Kein anderer Text, nur das reine JSON.`;
 
