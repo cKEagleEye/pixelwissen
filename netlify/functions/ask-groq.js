@@ -14,10 +14,10 @@ exports.handler = async function(event, context) {
     }
 
     let extraHint = "";
-    let levelHint = "Niveau: 4. Klasse Grundschule, anspruchsvoll und fordernd (Vorbereitung auf den Übergang zum Gymnasium). Stelle knifflige Fragen zu Regeln, Ausnahmen und tiefergehendem Verständnis, die echtes Nachdenken erfordern.";
+    let levelHint = "Niveau: 4. Klasse Grundschule, ideal für den Übergang zum Gymnasium. Anspruchsvoll, aber fair und motivierend (fokussiert auf wichtige Grammatikregeln wie Fälle, Zeiten, Wortarten, Satzglieder und typische Rechtschreibfallen, die in der 4. Klasse gelernt werden).";
 
     if (subject === 'englisch') {
-      extraHint = subject === 'englisch' && mode === 'phrases' ? "WICHTIG: Erstelle englische Sätze mit einer Lücke (markiert als '___'), in die das gesuchte Wort eingesetzt werden muss." : "";
+      extraHint = mode === 'phrases' ? "WICHTIG: Erstelle englische Sätze mit einer Lücke (markiert als '___'), in die das gesuchte Wort eingesetzt werden muss." : "";
       levelHint = "Niveau: Spielerisch und altersgerecht für die Grundschule (Englisch).";
     } else if (subject === 'turkisch') {
       extraHint = "WICHTIG: Erstelle kinderfreundliche Türkisch-Fragen (Vokabeln oder einfache Sätze) mit deutschen Erklärungen/Fragestellungen.";
@@ -29,8 +29,8 @@ exports.handler = async function(event, context) {
     ${levelHint}
     ${extraHint} 
     WICHTIG: 
-    1. Nenne das gesuchte Zielwort oder die Lösung NIEMALS direkt in der Frage. Verwende stattdessen anspruchsvolle Umschreibungen, Grammatikregeln (z.B. Fälle, Zeiten, Wortarten, Rechtschreibfallen wie das/dass, seit/seid) oder logische Verknüpfungen.
-    2. Alle 4 Antwortoptionen in 'options' müssen absolut unterschiedlich sein (keine doppelten Einträge) und plausible Fehler beinhalten, um das Kind zu fordern.
+    1. Nenne das gesuchte Zielwort oder die Lösung NIEMALS direkt in der Frage. Verwende stattdessen clevere Umschreibungen oder Beispielsätze mit Lücken.
+    2. Alle 4 Antwortoptionen in 'options' müssen absolut unterschiedlich sein (keine doppelten Einträge) und plausible Fehler beinhalten.
     Seed: ${randomSeed}. 
     Antworte AUSSCHLIESSLICH als gültiges JSON-Array im Format: [{"q":"Frage?","options":["A","B","C","D"],"a":0}] - die richtige Antwort ist bei Index 0. Kein anderer Text, nur das reine JSON.`;
 
