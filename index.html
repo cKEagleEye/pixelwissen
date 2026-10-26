@@ -109,6 +109,7 @@
       <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 text-center space-y-6">
         <div class="flex justify-between items-center text-xs text-slate-400 border-b border-slate-700 pb-3">
           <div id="math-progress" class="text-cyan-400 font-bold">Aufgabe 1 / 10</div>
+          <div id="math-timer" class="text-cyan-400 font-bold">⏱️ 20s</div>
           <div class="text-yellow-400 font-bold">🪙 1 Münze pro richtig</div>
         </div>
         <div class="space-y-4">
@@ -132,6 +133,7 @@
       <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 text-center space-y-6">
         <div class="flex justify-between items-center text-xs text-slate-400 border-b border-slate-700 pb-3">
           <div id="quiz-progress" class="font-bold">Aufgabe 1 / 10</div>
+          <div id="quiz-timer" class="text-amber-400 font-bold">⏱️ 20s</div>
           <div id="quiz-ai-badge" class="text-indigo-400 font-bold">⚡ Serverless KI Live</div>
         </div>
         <div id="quiz-loading" class="hidden py-8 space-y-3">
@@ -205,6 +207,12 @@
     let appData = { coins: 50, pin: "511201", wishes: [], history: {} };
     let activeSubject = null;
 
+    // Timer Variables
+    let mathTimerInterval = null;
+    let mathTimeLeft = 20;
+    let quizTimerInterval = null;
+    let quizTimeLeft = 20;
+
     const quizModes = {
       deutsch: { title: "📚 Deutsch-Meister", modes: { rechtschreibung: "Rechtschreibung", grammatik: "Grammatik" }},
       englisch: { title: "🇬🇧 English Hero", modes: { vokabeln: "Wortschatz", phrases: "Sätze mit Lücken" }},
@@ -270,6 +278,8 @@
     }
 
     function showView(viewName) {
+      clearInterval(mathTimerInterval);
+      clearInterval(quizTimerInterval);
       ['view-dashboard', 'view-tippen', 'view-mathe', 'view-quiz', 'view-results'].forEach(v => {
         const el = document.getElementById(v);
         if(el) el.classList.add('hidden');
@@ -376,9 +386,30 @@
       }
       mathState.currentAnswer = ans;
       document.getElementById('math-question-text').innerText = qText;
+      startMathTimer();
+    }
+
+    function startMathTimer() {
+      clearInterval(mathTimerInterval);
+      mathTimeLeft = 20;
+      const timerEl = document.getElementById('math-timer');
+      if(timerEl) timerEl.innerText = `⏱️ ${mathTimeLeft}s`;
+
+      mathTimerInterval = setInterval(() => {
+        mathTimeLeft--;
+        if(timerEl) timerEl.innerText = `⏱️ ${mathTimeLeft}s`;
+        if(mathTimeLeft <= 0) {
+          clearInterval(mathTimerInterval);
+          const feedback = document.getElementById('math-feedback');
+          feedback.className = "text-sm font-bold text-rose-400"; 
+          feedback.innerText = `⏳ Zeit abgelaufen! (Lösung: ${mathState.currentAnswer})`;
+          setTimeout(() => { nextMathQuestion(); }, 1500);
+        }
+      }, 1000);
     }
 
     function nextMathQuestion() {
+      clearInterval(mathTimerInterval);
       if (mathState.currentQuestion >= mathState.totalQuestions) {
         finishMathSession(); return;
       }
@@ -390,6 +421,7 @@
     }
 
     function checkMathAnswer() {
+      clearInterval(mathTimerInterval);
       const input = document.getElementById('math-answer').value;
       if (input === "") return;
       const userAns = parseInt(input);
@@ -404,6 +436,7 @@
     }
 
     function finishMathSession() {
+      clearInterval(mathTimerInterval);
       appData.coins += mathState.correctCount; 
       incrementUsage('mathe', mathState.mode);
       document.getElementById('result-title').innerText = "Mathe-Champion! 📐";
@@ -545,6 +578,7 @@
     }
 
     function nextQuizQuestion() {
+      clearInterval(quizTimerInterval);
       if (quizState.currentIdx >= 10) {
         appData.coins += quizState.correctCount; 
         incrementUsage(quizState.subject, quizState.mode);
@@ -572,9 +606,34 @@
         btn.onclick = () => checkQuizAnswer(idx, btn);
         container.appendChild(btn);
       });
+
+      startQuizTimer();
+    }
+
+    function startQuizTimer() {
+      clearInterval(quizTimerInterval);
+      quizTimeLeft = 20;
+      const timerEl = document.getElementById('quiz-timer');
+      if(timerEl) timerEl.innerText = `⏱️ ${quizTimeLeft}s`;
+
+      quizTimerInterval = setInterval(() => {
+        quizTimeLeft--;
+        if(timerEl) timerEl.innerText = `⏱️ ${quizTimeLeft}s`;
+        if(quizTimeLeft <= 0) {
+          clearInterval(quizTimerInterval);
+          const allBtns = document.querySelectorAll('#quiz-options-container button');
+          allBtns.forEach(b => b.disabled = true);
+          const feedback = document.getElementById('quiz-feedback');
+          feedback.className = "text-sm font-bold text-rose-400"; 
+          feedback.innerText = "⏳ Zeit abgelaufen!";
+          quizState.currentIdx++;
+          setTimeout(() => { nextQuizQuestion(); }, 1300);
+        }
+      }, 1000);
     }
 
     function checkQuizAnswer(selectedIdx, btn) {
+      clearInterval(quizTimerInterval);
       const feedback = document.getElementById('quiz-feedback');
       const allBtns = document.querySelectorAll('#quiz-options-container button');
       allBtns.forEach(b => b.disabled = true);
