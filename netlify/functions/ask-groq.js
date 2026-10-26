@@ -21,7 +21,13 @@ exports.handler = async function(event, context) {
     }
 
     const randomSeed = Math.floor(Math.random() * 100000);
-    const promptText = `Erstelle genau 10 Multiple-Choice-Fragen für die Grundschule im Fach '${subject}' (Thema: '${mode}'). ${extraHint} Seed: ${randomSeed}. Antworte AUSSCHLIESSLICH als gültiges JSON-Array im Format: [{"q":"Frage?","options":["A","B","C","D"],"a":0}] - die richtige Antwort ist bei Index 0. Kein anderer Text, nur das reine JSON.`;
+    const promptText = `Erstelle genau 10 hochwertige Multiple-Choice-Fragen für die Grundschule im Fach '${subject}' (Thema: '${mode}'). 
+    ${extraHint} 
+    WICHTIG: 
+    1. Nenne das gesuchte Zielwort NIEMALS direkt in der Frage (vermeide Formulierungen wie 'Wie schreibt man das Wort Haus?'). Verwende stattdessen Umschreibungen, Beispielsätze mit Lücken oder frage nach Rechtschreibregeln.
+    2. Alle 4 Antwortoptionen in 'options' müssen absolut unterschiedlich sein (keine doppelten Wörter oder Schreibweisen in derselben Aufgabe).
+    Seed: ${randomSeed}. 
+    Antworte AUSSCHLIESSLICH als gültiges JSON-Array im Format: [{"q":"Frage?","options":["A","B","C","D"],"a":0}] - die richtige Antwort ist bei Index 0. Kein anderer Text, nur das reine JSON.`;
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
