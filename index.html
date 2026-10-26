@@ -165,7 +165,8 @@
   <div id="wish-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
     <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-sm w-full space-y-4">
       <h3 class="font-bold text-lg text-white">Neuen Wunsch eintragen</h3>
-      <input type="text" id="wish-title" placeholder="z.B. 30 Min. Medienzeit" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-sm text-white focus:outline-none">
+      <input type="text" id="wish-title" placeholder="z.B. 30 Min. Zockzeit" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-sm text-white focus:outline-none">
+      <input type="number" id="wish-cost" placeholder="Kosten in Münzen (z.B. 20)" value="20" min="1" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-sm text-white focus:outline-none">
       <div class="flex justify-end gap-2">
         <button onclick="closeWishModal()" class="px-4 py-2 text-slate-400 hover:text-white text-xs">Abbrechen</button>
         <button onclick="submitWish()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold">Eintragen</button>
@@ -192,7 +193,10 @@
             <button onclick="adjustCoins(10)" class="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-lg text-xs font-bold">+10</button>
           </div>
         </div>
-        <div id="parent-wish-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Wünsche & Preise verwalten:</span>
+          <div id="parent-wish-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -604,13 +608,75 @@
       const list = document.getElementById('wish-list'); 
       if (list) {
         list.innerHTML = '';
-        if(!appData.wishes || appData.wishes.length === 0) list.innerHTML = '<p class="text-xs text-slate-500 italic">Noch keine Wünsche eingetragen.</p>';
-        else {
-          appData.wishes.forEach(w => {
-            list.innerHTML += `<div class="flex justify-between items-center p-3.5 bg-slate-900/60 rounded-xl border border-slate-700/60"><span class="font-medium text-sm text-slate-200">${w.title}</span></div>`;
+        if(!appData.wishes || appData.wishes.length === 0) {
+          list.innerHTML = '<p class="text-xs text-slate-500 italic">Noch keine Wünsche eingetragen.</p>';
+        } else {
+          appData.wishes.forEach((w, index) => {
+            const cost = w.cost || 20;
+            const canAfford = appData.coins >= cost;
+            list.innerHTML += `
+              <div class="flex justify-between items-center p-3.5 bg-slate-900/60 rounded-xl border border-slate-700/60 gap-3">
+                <div class="flex flex-col">
+                  <span class="font-medium text-sm text-slate-200">${w.title}</span>
+                  <span class="text-xs text-yellow-400 font-bold">Kosten: ${cost} 🪙 Münzen</span>
+                </div>
+                <button onclick="buyWish(${index})" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${canAfford ? 'bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer' : 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'}">
+                  ${canAfford ? 'Einlösen ✨' : 'Noch zu teuer'}
+                </button>
+              </div>
+            `;
           });
         }
       }
+      renderParentWishList();
+    }
+
+    function buyWish(index) {
+      const w = appData.wishes[index];
+      const cost = w.cost || 20;
+      if (appData.coins >= cost) {
+        appData.coins -= cost;
+        saveData();
+        renderApp();
+        alert(`🎉 Herzlichen Glückwunsch! Du hast dir "${w.title}" für ${cost} Münzen gegönnt!`);
+      } else {
+        alert("❌ Du hast noch nicht genug Münzen für diesen Wunsch!");
+      }
+    }
+
+    function renderParentWishList() {
+      const pList = document.getElementById('parent-wish-list');
+      if (!pList) return;
+      pList.innerHTML = '';
+      if (!appData.wishes || appData.wishes.length === 0) {
+        pList.innerHTML = '<p class="text-xs text-slate-500 italic">Keine Wünsche vorhanden.</p>';
+        return;
+      }
+      appData.wishes.forEach((w, index) => {
+        pList.innerHTML += `
+          <div class="flex justify-between items-center p-3 bg-slate-900 rounded-xl border border-slate-700 gap-2">
+            <span class="text-xs text-slate-200 font-medium truncate flex-1">${w.title}</span>
+            <input type="number" value="${w.cost || 20}" min="1" onchange="updateWishCost(${index}, this.value)" class="w-16 bg-slate-800 border border-slate-700 p-1.5 rounded text-center text-xs text-yellow-400 font-bold">
+            <span class="text-xs text-slate-400">🪙</span>
+            <button onclick="deleteWish(${index})" class="bg-rose-500/20 text-rose-400 px-2.5 py-1 rounded-lg text-xs font-bold hover:bg-rose-500/30">Löschen</button>
+          </div>
+        `;
+      });
+    }
+
+    function updateWishCost(index, newCost) {
+      if (appData.wishes[index]) {
+        appData.wishes[index].cost = Math.max(1, parseInt(newCost) || 20);
+        saveData();
+        renderApp();
+      }
+    }
+
+    function deleteWish(index) {
+      appData.wishes.splice(index, 1);
+      saveData();
+      renderApp();
+      renderParentWishList();
     }
 
     function openWishModal() { document.getElementById('wish-modal').classList.remove('hidden'); }
@@ -618,10 +684,16 @@
     function toggleParentModal() { document.getElementById('parent-modal').classList.toggle('hidden'); document.getElementById('pin-section').classList.remove('hidden'); document.getElementById('parent-panel').classList.add('hidden'); document.getElementById('parent-pin').value = ''; }
     
     function submitWish() {
-      const t = document.getElementById('wish-title').value; if(!t) return;
+      const t = document.getElementById('wish-title').value; 
+      const c = parseInt(document.getElementById('wish-cost').value) || 20;
+      if(!t) return;
       if (!appData.wishes) appData.wishes = [];
-      appData.wishes.push({ id: Date.now(), title: t, cost: 10, status: 'approved' });
-      saveData(); renderApp(); closeWishModal(); document.getElementById('wish-title').value = '';
+      appData.wishes.push({ id: Date.now(), title: t, cost: c, status: 'approved' });
+      saveData(); 
+      renderApp(); 
+      closeWishModal(); 
+      document.getElementById('wish-title').value = '';
+      document.getElementById('wish-cost').value = '20';
     }
     
     function checkPin() {
@@ -629,6 +701,7 @@
       if (enteredPin === "511201" || enteredPin === appData.pin) {
         document.getElementById('pin-section').classList.add('hidden'); 
         document.getElementById('parent-panel').classList.remove('hidden');
+        renderParentWishList();
       } else {
         alert("Falsche PIN! Die Standard-PIN lautet: 511201");
       }
